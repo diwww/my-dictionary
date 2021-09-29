@@ -31,7 +31,10 @@ class DictionaryInteractorTest {
 
     @Test
     fun getAllWords() {
-        val words = listOf(Word("дом", "house"), Word("dog", "собака"))
+        val words = listOf(
+            Word("дом", "house", Translation(Language.RU, Language.EN)),
+            Word("dog", "собака", Translation(Language.EN, Language.RU))
+        )
         every { repository.getWords() } returns Single.just(words)
 
         interactor.getAllWords()
@@ -56,7 +59,10 @@ class DictionaryInteractorTest {
     @Test
     fun searchWords() {
         val search = "abc"
-        val words = listOf(Word("дом", "house"), Word("dog", "собака"))
+        val words = listOf(
+            Word("дом", "house", Translation(Language.RU, Language.EN)),
+            Word("dog", "собака", Translation(Language.EN, Language.RU))
+        )
         every { repository.getWords(search) } returns Single.just(words)
 
         interactor.searchWords(search)
@@ -83,8 +89,11 @@ class DictionaryInteractorTest {
     fun translateAndSave() {
         val toTranslate = "abc"
         val translation = Translation(Language.EN, Language.RU)
-        val newWord = Word("river", "река")
-        val words = listOf(Word("дом", "house"), Word("dog", "собака"))
+        val newWord = Word("river", "река", translation)
+        val words = listOf(
+            Word("дом", "house", Translation(Language.RU, Language.EN)),
+            Word("dog", "собака", Translation(Language.EN, Language.RU))
+        )
         val newWords = words.plus(newWord)
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
         every { repository.saveWord(newWord) } returns Single.just(newWord)
@@ -117,7 +126,7 @@ class DictionaryInteractorTest {
     fun translateAndSave_SaveError() {
         val toTranslate = "abc"
         val translation = Translation(Language.EN, Language.RU)
-        val newWord = Word("river", "река")
+        val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
         every { repository.saveWord(newWord) } returns Single.error(exception)
@@ -134,7 +143,7 @@ class DictionaryInteractorTest {
     fun translateAndSave_GetWordsError() {
         val toTranslate = "abc"
         val translation = Translation(Language.EN, Language.RU)
-        val newWord = Word("river", "река")
+        val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
         every { repository.saveWord(newWord) } returns Single.just(newWord)
