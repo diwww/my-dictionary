@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        maven { setUrl("https://artifactory.artifacts.avp.ru:443/artifactory/mobile-maven-libs-release/") }
         google()
         mavenCentral()
     }
@@ -11,6 +12,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { setUrl("https://artifactory.artifacts.avp.ru:443/artifactory/mobile-maven-libs-release/") }
         google()
         mavenCentral()
     }

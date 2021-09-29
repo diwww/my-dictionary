@@ -1,7 +1,10 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    id("kotlin-kapt")
+//    kotlin("kapt") version "1.5.31"
 }
+
 
 android {
     compileSdkVersion(31)
@@ -39,9 +42,12 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.1")
+    implementation("com.github.terrakok:cicerone:7.1")
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
+    implementation("com.google.dagger:dagger:2.38.1")
+    kapt("com.google.dagger:dagger-compiler:2.38.1")
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.12.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
