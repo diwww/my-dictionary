@@ -47,6 +47,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.9.0")
     implementation("com.google.dagger:dagger:2.38.1")
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
     kapt("com.google.dagger:dagger-compiler:2.38.1")
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.12.0")

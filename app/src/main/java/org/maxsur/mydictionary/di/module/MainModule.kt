@@ -12,14 +12,12 @@ object MainModule {
 
     @JvmStatic
     @Provides
-    @Singleton
     fun provideInteractor(repository: DictionaryRepository): DictionaryInteractor {
         return DictionaryInteractor(repository)
     }
 
     @JvmStatic
     @Provides
-    @Singleton
     fun provideRepository(): DictionaryRepository {
         return DictionaryRepositoryStub()
     }
