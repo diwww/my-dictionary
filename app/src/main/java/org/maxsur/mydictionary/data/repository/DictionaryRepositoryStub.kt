@@ -23,7 +23,7 @@ class DictionaryRepositoryStub : DictionaryRepository {
     }
 
     override fun saveWord(word: Word): Single<Word> {
-        words.add(word)
+        words.add(0, word)
         return Single.just(word)
     }
 }
