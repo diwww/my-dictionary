@@ -24,6 +24,12 @@ interface DictionaryView : MvpView {
     fun showProgress(show: Boolean)
 
     /**
+     * Отобразить ошибку.
+     */
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun showError()
+
+    /**
      * Задать текст поиска.
      *
      * @param search текст поиска

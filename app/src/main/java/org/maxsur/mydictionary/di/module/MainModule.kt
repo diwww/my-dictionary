@@ -6,14 +6,18 @@ import org.maxsur.mydictionary.data.repository.DictionaryRepositoryStub
 import org.maxsur.mydictionary.domain.interactor.DictionaryInteractor
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
 import org.maxsur.mydictionary.presentation.presenter.dictionary.DictionaryPresenter
+import org.maxsur.mydictionary.util.RxSchedulers
 
 @Module
 object MainModule {
 
     @JvmStatic
     @Provides
-    fun providePresenter(interactor: DictionaryInteractor):DictionaryPresenter{
-        return DictionaryPresenter(interactor)
+    fun providePresenter(
+        interactor: DictionaryInteractor,
+        rxSchedulers: RxSchedulers
+    ): DictionaryPresenter {
+        return DictionaryPresenter(interactor, rxSchedulers)
     }
 
     @JvmStatic
@@ -26,5 +30,11 @@ object MainModule {
     @Provides
     fun provideRepository(): DictionaryRepository {
         return DictionaryRepositoryStub()
+    }
+
+    @JvmStatic
+    @Provides
+    fun provideRxSchedulers(): RxSchedulers {
+        return RxSchedulers()
     }
 }

@@ -2,6 +2,8 @@ package org.maxsur.mydictionary.presentation.view.dictionary
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,6 +67,11 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     override fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
         translateButton.visibility = if (show) View.GONE else View.VISIBLE
+        searchEditText.isEnabled = !show
+    }
+
+    override fun showError() {
+        Toast.makeText(requireContext(), R.string.error_general, Toast.LENGTH_SHORT).show()
     }
 
     override fun setSearchText(search: String) {
@@ -107,6 +114,7 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
                 spinnerTo.selectedItemPosition
             )
         }
+        searchEditText.addTextChangedListener(AfterTextChanged(presenter::searchWords))
     }
 
     private fun setupSpinner(spinner: Spinner) {
@@ -124,5 +132,19 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
 
         @JvmStatic
         fun newInstance() = DictionaryFragment()
+    }
+}
+
+private class AfterTextChanged(private val block: (String) -> Unit) : TextWatcher {
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        // do nothing
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        // do nothing
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+        block(s.toString())
     }
 }

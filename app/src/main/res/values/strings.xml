@@ -2,6 +2,7 @@
     <string name="app_name">MyDictionary</string>
     <string name="talkback_button_translate">Translate</string>
     <string name="talkback_button_reverse">Swap languages</string>
+    <string name="error_general">Error occurred, please try again</string>
 
     <string-array name="languages">
         <item>RU</item>
