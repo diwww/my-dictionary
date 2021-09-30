@@ -9,12 +9,9 @@ import io.mockk.verify
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
-import org.maxsur.mydictionary.domain.model.Language
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
-import java.lang.Exception
-import java.lang.RuntimeException
 
 class DictionaryInteractorTest {
 
@@ -32,8 +29,8 @@ class DictionaryInteractorTest {
     @Test
     fun getAllWords() {
         val words = listOf(
-            Word("дом", "house", Translation(Language.RU, Language.EN)),
-            Word("dog", "собака", Translation(Language.EN, Language.RU))
+            Word("дом", "house", Translation("RU", "EN")),
+            Word("dog", "собака", Translation("EN", "RU"))
         )
         every { repository.getWords() } returns Single.just(words)
 
@@ -60,8 +57,8 @@ class DictionaryInteractorTest {
     fun searchWords() {
         val search = "abc"
         val words = listOf(
-            Word("дом", "house", Translation(Language.RU, Language.EN)),
-            Word("dog", "собака", Translation(Language.EN, Language.RU))
+            Word("дом", "house", Translation("RU", "EN")),
+            Word("dog", "собака", Translation("EN", "RU"))
         )
         every { repository.getWords(search) } returns Single.just(words)
 
@@ -88,11 +85,11 @@ class DictionaryInteractorTest {
     @Test
     fun translateAndSave() {
         val toTranslate = "abc"
-        val translation = Translation(Language.EN, Language.RU)
+        val translation = Translation("EN", "RU")
         val newWord = Word("river", "река", translation)
         val words = listOf(
-            Word("дом", "house", Translation(Language.RU, Language.EN)),
-            Word("dog", "собака", Translation(Language.EN, Language.RU))
+            Word("дом", "house", Translation("RU", "EN")),
+            Word("dog", "собака", Translation("EN", "RU"))
         )
         val newWords = words.plus(newWord)
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
@@ -111,7 +108,7 @@ class DictionaryInteractorTest {
     @Test
     fun translateAndSave_TranslateError() {
         val toTranslate = "abc"
-        val translation = Translation(Language.EN, Language.RU)
+        val translation = Translation("EN", "RU")
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.error(exception)
 
@@ -125,7 +122,7 @@ class DictionaryInteractorTest {
     @Test
     fun translateAndSave_SaveError() {
         val toTranslate = "abc"
-        val translation = Translation(Language.EN, Language.RU)
+        val translation = Translation("EN", "RU")
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
@@ -142,7 +139,7 @@ class DictionaryInteractorTest {
     @Test
     fun translateAndSave_GetWordsError() {
         val toTranslate = "abc"
-        val translation = Translation(Language.EN, Language.RU)
+        val translation = Translation("EN", "RU")
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)

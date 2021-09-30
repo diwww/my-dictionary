@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">MyDictionary</string>
-    <string name="button_translate">Translate</string>
+    <string name="talkback_button_translate">Translate</string>
+    <string name="talkback_button_reverse">Swap languages</string>
+
+    <string-array name="languages">
+        <item>RU</item>
+        <item>EN</item>
+        <item>DE</item>
+    </string-array>
 </resources>

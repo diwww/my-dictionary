@@ -30,4 +30,13 @@ interface DictionaryView : MvpView {
      */
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setSearchText(search: String)
+
+    /**
+     * Задать выбранные элементы в спинерах языка.
+     *
+     * @param fromPos новая позиция в спинере языка, с которого переводить
+     * @param toPos новая позиция в спинере языка, на который переводить
+     */
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun setSpinnersSelection(fromPos:Int, toPos:Int)
 }

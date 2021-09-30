@@ -51,8 +51,8 @@ class WordsAdapter : RecyclerView.Adapter<WordsAdapter.WordViewHolder>() {
 
         fun onBind(word: Word) {
             with(word) {
-                fromTextView.text = translation.from.name
-                toTextView.text = translation.to.name
+                fromTextView.text = translation.from
+                toTextView.text = translation.to
                 originalWordTextView.text = original
                 translatedWordTextView.text = translated
             }

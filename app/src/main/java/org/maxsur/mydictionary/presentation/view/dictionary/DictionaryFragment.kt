@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ProgressBar
+import android.widget.*
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +31,9 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     private lateinit var translateButton: ImageButton
     private lateinit var recyclerView: RecyclerView
     private lateinit var progressBar: ProgressBar
+    private lateinit var spinnerFrom: Spinner
+    private lateinit var spinnerTo: Spinner
+    private lateinit var reverseButton: ImageButton
     private val wordsAdapter = WordsAdapter()
 
     private val presenter by moxyPresenter {
@@ -63,27 +64,59 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
 
     override fun showProgress(show: Boolean) {
         progressBar.visibility = if (show) View.VISIBLE else View.GONE
+        translateButton.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     override fun setSearchText(search: String) {
         searchEditText.setText(search)
     }
 
-    private fun initViews(view: View) {
-        searchEditText = view.findViewById(R.id.edit_text_search)
-        translateButton = view.findViewById(R.id.button_translate)
-        recyclerView = view.findViewById(R.id.recycler_view)
-        progressBar = view.findViewById(R.id.progress_bar)
+    override fun setSpinnersSelection(fromPos: Int, toPos: Int) {
+        spinnerFrom.setSelection(fromPos)
+        spinnerTo.setSelection(toPos)
+    }
+
+    private fun initViews(view: View) = with(view) {
+        searchEditText = findViewById(R.id.edit_text_search)
+        translateButton = findViewById(R.id.button_translate)
+        recyclerView = findViewById(R.id.recycler_view)
+        progressBar = findViewById(R.id.progress_bar)
+        spinnerFrom = findViewById(R.id.spinner_lang_from)
+        spinnerTo = findViewById(R.id.spinner_lang_to)
+        reverseButton = findViewById(R.id.button_reverse)
     }
 
     private fun setupViews() {
         translateButton.setOnClickListener {
-            presenter.translate(searchEditText.text.toString())
+            presenter.translate(
+                searchEditText.text.toString(),
+                spinnerFrom.selectedItem.toString(),
+                spinnerTo.selectedItem.toString()
+            )
         }
         recyclerView.apply {
             adapter = wordsAdapter
             layoutManager = LinearLayoutManager(context, VERTICAL, false)
             addItemDecoration(DividerItemDecoration(context, VERTICAL))
+        }
+        setupSpinner(spinnerFrom)
+        setupSpinner(spinnerTo)
+        reverseButton.setOnClickListener {
+            presenter.reverseLanguages(
+                spinnerFrom.selectedItemPosition,
+                spinnerTo.selectedItemPosition
+            )
+        }
+    }
+
+    private fun setupSpinner(spinner: Spinner) {
+        ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.languages,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
         }
     }
 

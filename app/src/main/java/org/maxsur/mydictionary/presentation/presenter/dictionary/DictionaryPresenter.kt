@@ -3,7 +3,6 @@ package org.maxsur.mydictionary.presentation.presenter.dictionary
 import io.reactivex.disposables.CompositeDisposable
 import moxy.MvpPresenter
 import org.maxsur.mydictionary.domain.interactor.DictionaryInteractor
-import org.maxsur.mydictionary.domain.model.Language
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.presentation.view.dictionary.DictionaryView
@@ -26,13 +25,17 @@ class DictionaryPresenter(private val interactor: DictionaryInteractor) :
         compositeDisposable.clear()
     }
 
-    fun translate(word: String) {
+    fun translate(word: String, from: String, to: String) {
         if (word.isNotBlank()) {
-            interactor.translateAndSave(word, Translation(Language.EN, Language.RU))
+            interactor.translateAndSave(word, Translation(from, to))
                 .doOnSuccess { viewState.setSearchText("") }
                 .subscribe(this::onSuccess, this::onError)
                 .also(compositeDisposable::add)
         }
+    }
+
+    fun reverseLanguages(fromPos: Int, toPos: Int) {
+        viewState.setSpinnersSelection(toPos, fromPos)
     }
 
     private fun onSuccess(words: List<Word>) {

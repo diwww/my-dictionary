@@ -1,8 +1,6 @@
 package org.maxsur.mydictionary.data.repository
 
 import io.reactivex.Single
-import org.maxsur.mydictionary.domain.model.Language.EN
-import org.maxsur.mydictionary.domain.model.Language.RU
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
@@ -10,8 +8,8 @@ import org.maxsur.mydictionary.domain.repository.DictionaryRepository
 class DictionaryRepositoryStub : DictionaryRepository {
 
     private val words = listOf(
-        Word("dog", "собака", Translation(EN, RU)),
-        Word("house", "дом", Translation(EN, RU))
+        Word("dog", "собака", Translation("EN", "RU")),
+        Word("house", "дом", Translation("EN", "RU"))
     ).toMutableList()
 
     override fun getWords(search: String?): Single<List<Word>> {

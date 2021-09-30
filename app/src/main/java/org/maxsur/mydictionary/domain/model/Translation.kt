@@ -7,8 +7,8 @@ package org.maxsur.mydictionary.domain.model
  * @property to  язык, на который осуществляется перевод
  */
 data class Translation(
-    val from: Language,
-    val to: Language
+    val from: String,
+    val to: String
 ) {
 
     /**
