@@ -17,7 +17,10 @@ class DictionaryRepositoryStub : DictionaryRepository {
     }
 
     override fun translate(word: String, translation: Translation): Single<Word> {
-        return Single.just(Word(word, "translated", translation))
+        return Single.fromCallable{
+            Thread.sleep(5000)
+            Word(word, "translated", translation)
+        }
     }
 
     override fun saveWord(word: Word): Single<Word> {

@@ -1,6 +1,8 @@
 package org.maxsur.mydictionary.presentation.presenter.dictionary
 
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import moxy.MvpPresenter
 import org.maxsur.mydictionary.domain.interactor.DictionaryInteractor
 import org.maxsur.mydictionary.domain.model.Translation
@@ -14,8 +16,8 @@ class DictionaryPresenter(private val interactor: DictionaryInteractor) :
 
     override fun onFirstViewAttach() {
         interactor.getAllWords()
-//            .subscribeOn()
-//            .observeOn()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(this::onSuccess, this::onError)
             .also(compositeDisposable::add)
     }
@@ -28,6 +30,10 @@ class DictionaryPresenter(private val interactor: DictionaryInteractor) :
     fun translate(word: String, from: String, to: String) {
         if (word.isNotBlank()) {
             interactor.translateAndSave(word, Translation(from, to))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { viewState.showProgress(true) }
+                .doOnEvent { _, _ -> viewState.showProgress(false) }
                 .doOnSuccess { viewState.setSearchText("") }
                 .subscribe(this::onSuccess, this::onError)
                 .also(compositeDisposable::add)
