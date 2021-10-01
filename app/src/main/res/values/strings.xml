@@ -5,8 +5,8 @@
     <string name="error_general">Error occurred, please try again</string>
 
     <string-array name="languages">
-        <item>RU</item>
-        <item>EN</item>
-        <item>DE</item>
+        <item>ru</item>
+        <item>en</item>
+        <item>de</item>
     </string-array>
 </resources>

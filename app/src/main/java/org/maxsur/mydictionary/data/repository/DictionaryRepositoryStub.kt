@@ -4,7 +4,6 @@ import io.reactivex.Single
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
-import java.lang.RuntimeException
 import java.util.*
 
 class DictionaryRepositoryStub : DictionaryRepository {
@@ -43,8 +42,7 @@ class DictionaryRepositoryStub : DictionaryRepository {
         }
     }
 
-    override fun saveWord(word: Word): Single<Word> {
-        words.add(0, word)
-        return Single.just(word)
+    override fun saveWord(word: Word) {
+        words.add(word)
     }
 }

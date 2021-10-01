@@ -40,7 +40,7 @@ class DictionaryInteractor(private val repository: DictionaryRepository) {
      */
     fun translateAndSave(word: String, translation: Translation): Single<List<Word>> {
         return repository.translate(word, translation)
-            .flatMap(repository::saveWord)
+            .doOnSuccess { repository.saveWord(it) }
             .flatMap { repository.getWords() }
     }
 }

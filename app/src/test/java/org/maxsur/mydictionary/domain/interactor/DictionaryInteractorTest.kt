@@ -5,6 +5,8 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
+import io.mockk.runs
 import io.mockk.verify
 import io.reactivex.Single
 import org.junit.Before
@@ -93,7 +95,7 @@ class DictionaryInteractorTest {
         )
         val newWords = words.plus(newWord)
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } returns Single.just(newWord)
+        every { repository.saveWord(newWord) } just runs
         every { repository.getWords() } returns Single.just(newWords)
 
         interactor.translateAndSave(toTranslate, translation)
@@ -126,7 +128,7 @@ class DictionaryInteractorTest {
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } returns Single.error(exception)
+        every { repository.saveWord(newWord) } throws exception
 
         interactor.translateAndSave(toTranslate, translation)
             .test()
@@ -143,7 +145,7 @@ class DictionaryInteractorTest {
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } returns Single.just(newWord)
+        every { repository.saveWord(newWord) } just runs
         every { repository.getWords() } returns Single.error(exception)
 
         interactor.translateAndSave(toTranslate, translation)

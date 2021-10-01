@@ -30,7 +30,6 @@ interface DictionaryRepository {
      * Сохранить переведенное слово в БД.
      *
      * @param word переведенное слово
-     * @return сохраненное слово
      */
-    fun saveWord(word: Word): Single<Word>
+    fun saveWord(word: Word)
 }
