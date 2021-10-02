@@ -1,5 +1,6 @@
 package org.maxsur.mydictionary.domain.repository
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
@@ -31,5 +32,13 @@ interface DictionaryRepository {
      *
      * @param word переведенное слово
      */
-    fun saveWord(word: Word)
+    fun saveWord(word: Word): Completable
+
+    /**
+     * Обновить слово.
+     *
+     * @param word обновленное слово с тем же id
+     * @return обновленное слово из БД
+     */
+    fun updateWord(word: Word): Single<Word>
 }

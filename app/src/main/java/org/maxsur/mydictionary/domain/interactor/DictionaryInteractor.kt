@@ -40,7 +40,17 @@ class DictionaryInteractor(private val repository: DictionaryRepository) {
      */
     fun translateAndSave(word: String, translation: Translation): Single<List<Word>> {
         return repository.translate(word, translation)
-            .doOnSuccess { repository.saveWord(it) }
-            .flatMap { repository.getWords() }
+            .flatMapCompletable(repository::saveWord)
+            .andThen(repository.getWords())
+    }
+
+    /**
+     * Инвертировать состояние избранного у слова.
+     *
+     * @param word слово для изменения
+     * @return слово с инвертированным состоянием избранного
+     */
+    fun switchFavorite(word: Word): Single<Word> {
+        return repository.updateWord(word.copy(favorite = !word.favorite))
     }
 }

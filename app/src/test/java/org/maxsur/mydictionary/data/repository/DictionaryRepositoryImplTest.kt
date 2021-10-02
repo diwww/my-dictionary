@@ -4,12 +4,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.verify
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter
-import org.maxsur.mydictionary.data.converter.WordEntityListToWordListConverter
+import org.maxsur.mydictionary.data.converter.WordEntityToWordConverter
 import org.maxsur.mydictionary.data.converter.WordToWordEntityConverter
 import org.maxsur.mydictionary.data.dao.DictionaryDao
 import org.maxsur.mydictionary.data.model.local.WordEntity
@@ -17,7 +17,6 @@ import org.maxsur.mydictionary.data.model.remote.TranslateResponse
 import org.maxsur.mydictionary.data.service.DictionaryService
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
-import java.lang.RuntimeException
 
 class DictionaryRepositoryImplTest {
 
@@ -34,7 +33,7 @@ class DictionaryRepositoryImplTest {
     private lateinit var wordToWordEntityConverter: WordToWordEntityConverter
 
     @MockK
-    private lateinit var wordEntityListToWordListConverter: WordEntityListToWordListConverter
+    private lateinit var wordEntityToWordConverter: WordEntityToWordConverter
 
     @InjectMockKs
     private lateinit var repository: DictionaryRepositoryImpl
@@ -55,7 +54,7 @@ class DictionaryRepositoryImplTest {
             Word("dog", "собака", Translation("en", "ru"))
         )
         every { dictionaryDao.getAllWords() } returns Single.just(wordEntities)
-        every { wordEntityListToWordListConverter.convert(wordEntities) } returns words
+        every { wordEntityToWordConverter.convertList(wordEntities) } returns words
 
         repository.getWords(null)
             .test()
@@ -75,7 +74,7 @@ class DictionaryRepositoryImplTest {
             Word("dog", "собака", Translation("en", "ru"))
         )
         every { dictionaryDao.searchWords(search) } returns Single.just(wordEntities)
-        every { wordEntityListToWordListConverter.convert(wordEntities) } returns words
+        every { wordEntityToWordConverter.convertList(wordEntities) } returns words
 
         repository.getWords(search)
             .test()
@@ -117,9 +116,26 @@ class DictionaryRepositoryImplTest {
         val word = Word("house", "дом", Translation("en", "ru"))
         val wordEntity = WordEntity(0, "house", "дом", "en", "ru")
         every { wordToWordEntityConverter.convert(word) } returns wordEntity
+        every { dictionaryDao.saveWord(wordEntity) } returns Completable.complete()
 
         repository.saveWord(word)
+            .test()
+            .assertNoErrors()
+            .assertComplete()
+    }
 
-        verify { dictionaryDao.saveWord(wordEntity) }
+    @Test
+    fun updateWord() {
+        val word = Word("house", "дом", Translation("en", "ru"), id = 0)
+        val wordEntity = WordEntity(0, "house", "дом", "en", "to")
+        every { wordToWordEntityConverter.convert(word) } returns wordEntity
+        every { wordEntityToWordConverter.convert(wordEntity) } returns word
+        every { dictionaryDao.updateWord(wordEntity) } returns Completable.complete()
+        every { dictionaryDao.getWord(0) } returns Single.just(wordEntity)
+
+        repository.updateWord(word)
+            .test()
+            .assertNoErrors()
+            .assertValue(word)
     }
 }

@@ -1,5 +1,6 @@
 package org.maxsur.mydictionary.data.repository
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
@@ -42,7 +43,12 @@ class DictionaryRepositoryStub : DictionaryRepository {
         }
     }
 
-    override fun saveWord(word: Word) {
-        words.add(word)
+    override fun saveWord(word: Word): Completable {
+        return Completable.fromAction { words.add(word) }
+    }
+
+    override fun updateWord(word: Word): Single<Word> {
+        // do nothing
+        return Single.just(word)
     }
 }

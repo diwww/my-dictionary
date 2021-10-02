@@ -14,7 +14,8 @@ class WordToWordEntityConverter : Converter<Word, WordEntity, Any> {
             translated = from.translated,
             fromLang = from.translation.from,
             toLang = from.translation.to,
-            favorite = from.favorite
+            favorite = from.favorite,
+            uid = from.id
         )
     }
 }

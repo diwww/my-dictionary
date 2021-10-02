@@ -37,10 +37,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/text_from"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_favorite"
         app:layout_constraintStart_toEndOf="@+id/text_from"
         app:layout_constraintTop_toTopOf="@+id/text_from"
         tools:text="dog" />
@@ -50,12 +50,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/text_to"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_favorite"
         app:layout_constraintStart_toEndOf="@+id/text_to"
         app:layout_constraintTop_toTopOf="@+id/text_to"
         tools:text="собака" />
+
+    <ImageButton
+        android:id="@+id/button_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/talkback_button_favorite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_star_24"
+        app:tint="?attr/colorAccent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

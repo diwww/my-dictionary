@@ -93,6 +93,22 @@ class DictionaryPresenter(
         viewState.setSpinnersSelection(toPos, fromPos)
     }
 
+    /**
+     * Изменить состояние избранного у слова.
+     *
+     * @param word слово
+     * @param position позиция слова в списке
+     */
+    fun switchFavorite(word: Word, position: Int) {
+        interactor.switchFavorite(word)
+            .subscribeOn(rxSchedulers.io)
+            .observeOn(rxSchedulers.main)
+            .subscribe({
+                viewState.updateWord(it, position)
+            }, this::onError)
+            .also(compositeDisposable::add)
+    }
+
     private fun onSuccess(words: List<Word>) {
         viewState.showWords(words)
     }

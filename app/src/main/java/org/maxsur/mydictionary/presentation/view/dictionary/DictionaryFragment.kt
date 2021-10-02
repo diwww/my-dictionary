@@ -36,7 +36,9 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     private lateinit var spinnerFrom: Spinner
     private lateinit var spinnerTo: Spinner
     private lateinit var reverseButton: ImageButton
-    private val wordsAdapter = WordsAdapter()
+    private val wordsAdapter = WordsAdapter { word, position ->
+        presenter.switchFavorite(word, position)
+    }
 
     private val presenter by moxyPresenter {
         presenterProvider.get()
@@ -81,6 +83,10 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     override fun setSpinnersSelection(fromPos: Int, toPos: Int) {
         spinnerFrom.setSelection(fromPos)
         spinnerTo.setSelection(toPos)
+    }
+
+    override fun updateWord(word: Word, position: Int) {
+        wordsAdapter.updateWord(word, position)
     }
 
     private fun initViews(view: View) = with(view) {

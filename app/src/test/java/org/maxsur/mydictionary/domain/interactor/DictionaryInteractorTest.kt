@@ -5,9 +5,8 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.just
-import io.mockk.runs
 import io.mockk.verify
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
@@ -95,7 +94,7 @@ class DictionaryInteractorTest {
         )
         val newWords = words.plus(newWord)
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } just runs
+        every { repository.saveWord(newWord) } returns Completable.complete()
         every { repository.getWords() } returns Single.just(newWords)
 
         interactor.translateAndSave(toTranslate, translation)
@@ -113,6 +112,7 @@ class DictionaryInteractorTest {
         val translation = Translation("EN", "RU")
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.error(exception)
+        every { repository.getWords() } returns Single.just(emptyList())
 
         interactor.translateAndSave(toTranslate, translation)
             .test()
@@ -128,12 +128,14 @@ class DictionaryInteractorTest {
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } throws exception
+        every { repository.saveWord(newWord) } returns Completable.error(exception)
+        every { repository.getWords() } returns Single.just(emptyList())
 
         interactor.translateAndSave(toTranslate, translation)
             .test()
             .assertNoValues()
             .assertError(exception)
+
         verify { repository.translate(toTranslate, translation) }
         verify { repository.saveWord(newWord) }
     }
@@ -145,7 +147,7 @@ class DictionaryInteractorTest {
         val newWord = Word("river", "река", translation)
         val exception = RuntimeException()
         every { repository.translate(toTranslate, translation) } returns Single.just(newWord)
-        every { repository.saveWord(newWord) } just runs
+        every { repository.saveWord(newWord) } returns Completable.complete()
         every { repository.getWords() } returns Single.error(exception)
 
         interactor.translateAndSave(toTranslate, translation)
@@ -155,5 +157,17 @@ class DictionaryInteractorTest {
         verify { repository.translate(toTranslate, translation) }
         verify { repository.saveWord(newWord) }
         verify { repository.getWords() }
+    }
+
+    @Test
+    fun switchFavorite() {
+        val originalWord = Word("river", "река", Translation("EN", "RU"), favorite = true, id = 123)
+        val newWord = Word("river", "река", Translation("EN", "RU"), favorite = false, id = 123)
+        every { repository.updateWord(newWord) } returns Single.just(newWord)
+
+        interactor.switchFavorite(originalWord)
+            .test()
+            .assertValue(newWord)
+            .assertNoErrors()
     }
 }

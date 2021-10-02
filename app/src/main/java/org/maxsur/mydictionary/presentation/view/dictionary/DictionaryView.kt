@@ -44,5 +44,14 @@ interface DictionaryView : MvpView {
      * @param toPos новая позиция в спинере языка, на который переводить
      */
     @StateStrategyType(AddToEndSingleStrategy::class)
-    fun setSpinnersSelection(fromPos:Int, toPos:Int)
+    fun setSpinnersSelection(fromPos: Int, toPos: Int)
+
+    /**
+     * Обновить слово на определенной позиции.
+     *
+     * @param word
+     *
+     */
+    @StateStrategyType(AddToEndSingleStrategy::class)
+    fun updateWord(word: Word, position: Int)
 }

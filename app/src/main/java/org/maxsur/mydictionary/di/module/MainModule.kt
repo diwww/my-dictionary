@@ -5,7 +5,7 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import org.maxsur.mydictionary.BuildConfig
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter
-import org.maxsur.mydictionary.data.converter.WordEntityListToWordListConverter
+import org.maxsur.mydictionary.data.converter.WordEntityToWordConverter
 import org.maxsur.mydictionary.data.converter.WordToWordEntityConverter
 import org.maxsur.mydictionary.data.database.DictionaryDatabase
 import org.maxsur.mydictionary.data.repository.DictionaryRepositoryImpl
@@ -51,7 +51,7 @@ object MainModule {
                 dictionaryDatabase.dictionaryDao(),
                 TranslateResponseToWordConverter(),
                 WordToWordEntityConverter(),
-                WordEntityListToWordListConverter()
+                WordEntityToWordConverter()
             )
         }
     }

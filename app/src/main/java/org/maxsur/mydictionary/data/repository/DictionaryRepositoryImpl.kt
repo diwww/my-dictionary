@@ -1,10 +1,11 @@
 package org.maxsur.mydictionary.data.repository
 
+import io.reactivex.Completable
 import io.reactivex.Single
 import org.maxsur.mydictionary.BuildConfig
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter.ConverterArgs
-import org.maxsur.mydictionary.data.converter.WordEntityListToWordListConverter
+import org.maxsur.mydictionary.data.converter.WordEntityToWordConverter
 import org.maxsur.mydictionary.data.converter.WordToWordEntityConverter
 import org.maxsur.mydictionary.data.dao.DictionaryDao
 import org.maxsur.mydictionary.data.model.remote.TranslateRequestBody
@@ -20,14 +21,14 @@ import org.maxsur.mydictionary.domain.repository.DictionaryRepository
  * @property dictionaryDao интерфейс для доступа к БД словаря
  * @property translateResponseToWordConverter конвертер ответа в доменную модель
  * @property wordToWordEntityConverter конверетер доменной модели в сущность БД
- * @property wordEntityListToWordListConverter конвертер списка сущностей БД в список доменных моделей
+ * @property wordEntityToWordConverter конвертер списка сущностей БД в список доменных моделей
  */
 class DictionaryRepositoryImpl(
     private val dictionaryService: DictionaryService,
     private val dictionaryDao: DictionaryDao,
     private val translateResponseToWordConverter: TranslateResponseToWordConverter,
     private val wordToWordEntityConverter: WordToWordEntityConverter,
-    private val wordEntityListToWordListConverter: WordEntityListToWordListConverter
+    private val wordEntityToWordConverter: WordEntityToWordConverter
 ) : DictionaryRepository {
 
     override fun getWords(search: String?): Single<List<Word>> {
@@ -35,7 +36,7 @@ class DictionaryRepositoryImpl(
             dictionaryDao.searchWords(search)
         } else {
             dictionaryDao.getAllWords()
-        }.map(wordEntityListToWordListConverter::convert)
+        }.map(wordEntityToWordConverter::convertList)
     }
 
     override fun translate(word: String, translation: Translation): Single<Word> {
@@ -51,7 +52,12 @@ class DictionaryRepositoryImpl(
         }
     }
 
-    override fun saveWord(word: Word) {
-        dictionaryDao.saveWord(wordToWordEntityConverter.convert(word))
+    override fun saveWord(word: Word): Completable {
+        return dictionaryDao.saveWord(wordToWordEntityConverter.convert(word))
+    }
+
+    override fun updateWord(word: Word): Single<Word> {
+        return dictionaryDao.updateWord(wordToWordEntityConverter.convert(word))
+            .andThen(dictionaryDao.getWord(word.id).map(wordEntityToWordConverter::convert))
     }
 }

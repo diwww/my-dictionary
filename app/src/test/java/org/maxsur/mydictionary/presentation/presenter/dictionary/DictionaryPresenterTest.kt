@@ -1,9 +1,13 @@
 package org.maxsur.mydictionary.presentation.presenter.dictionary
 
 import android.util.Log
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import io.mockk.verify
 import io.reactivex.Single
 import io.reactivex.schedulers.TestScheduler
 import org.junit.After
@@ -235,5 +239,20 @@ class DictionaryPresenterTest {
         presenter.reverseLanguages(from, to)
 
         verify { view.setSpinnersSelection(to, from) }
+    }
+
+    @Test
+    fun switchFavorite() {
+        val originalWord = Word("дом", "house", Translation("RU", "EN"), id = 123, favorite = false)
+        val newWord = Word("дом", "house", Translation("RU", "EN"), id = 123, favorite = true)
+        val position = 1
+        every { interactor.switchFavorite(originalWord) } returns Single.just(newWord)
+        every { interactor.getAllWords() } returns Single.just(emptyList())
+        presenter.attachView(view)
+
+        presenter.switchFavorite(originalWord, position)
+        testScheduler.triggerActions()
+
+        verify { view.updateWord(newWord, position) }
     }
 }
