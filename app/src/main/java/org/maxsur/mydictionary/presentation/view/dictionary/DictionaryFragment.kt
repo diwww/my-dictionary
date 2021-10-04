@@ -4,12 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageButton
@@ -26,13 +24,14 @@ import org.maxsur.mydictionary.DictionaryApplication
 import org.maxsur.mydictionary.R
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.presentation.presenter.dictionary.DictionaryPresenter
+import org.maxsur.mydictionary.presentation.view.common.WordsAdapter
 import javax.inject.Inject
 import javax.inject.Provider
 
 /**
  * Экран словаря.
  */
-class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
+class DictionaryFragment : MvpAppCompatFragment(R.layout.fragment_dictionary), DictionaryView {
 
     @Inject
     lateinit var presenterProvider: Provider<DictionaryPresenter>
@@ -57,14 +56,6 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context.applicationContext as DictionaryApplication).component.inject(this)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_dictionary, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

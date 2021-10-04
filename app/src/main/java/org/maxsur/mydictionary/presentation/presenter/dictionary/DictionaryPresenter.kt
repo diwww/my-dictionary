@@ -50,7 +50,6 @@ class DictionaryPresenter(
     }
 
     override fun onDestroy() {
-        compositeDisposable.dispose()
         compositeDisposable.clear()
     }
 
@@ -87,7 +86,7 @@ class DictionaryPresenter(
                 .subscribeOn(rxSchedulers.io)
                 .observeOn(rxSchedulers.main)
                 .doOnSubscribe { viewState.showProgress(true) }
-                .doOnEvent { _, _ -> viewState.showProgress(false) }
+                .doFinally { viewState.showProgress(false) }
                 .doOnSuccess { viewState.setSearchText("") }
                 .subscribe(this::onSuccess, this::onError)
                 .also(compositeDisposable::add)

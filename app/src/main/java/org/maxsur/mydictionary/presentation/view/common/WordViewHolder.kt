@@ -1,4 +1,4 @@
-package org.maxsur.mydictionary.presentation.view.dictionary
+package org.maxsur.mydictionary.presentation.view.common
 
 import android.view.View
 import android.widget.ImageButton

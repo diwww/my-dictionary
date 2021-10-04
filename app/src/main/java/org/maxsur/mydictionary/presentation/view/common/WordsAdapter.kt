@@ -1,18 +1,17 @@
-package org.maxsur.mydictionary.presentation.view.favorites
+package org.maxsur.mydictionary.presentation.view.common
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.maxsur.mydictionary.R
 import org.maxsur.mydictionary.domain.model.Word
-import org.maxsur.mydictionary.presentation.view.dictionary.WordViewHolder
 
 /**
- * [RecyclerView.Adapter] для списка избранных слов.
+ * [RecyclerView.Adapter] для списка слов с переводом.
  *
  * @property favoriteClickListener слушатель клика для избранного
  */
-class FavoritesAdapter(private val favoriteClickListener: (Word, Int) -> Unit) :
+class WordsAdapter(private val favoriteClickListener: (Word, Int) -> Unit) :
     RecyclerView.Adapter<WordViewHolder>() {
 
     private val words = ArrayList<Word>()
@@ -29,5 +28,16 @@ class FavoritesAdapter(private val favoriteClickListener: (Word, Int) -> Unit) :
 
     override fun getItemCount(): Int = words.size
 
+    fun setWords(newWords: List<Word>) {
+        words.apply {
+            clear()
+            addAll(newWords)
+        }
+        notifyDataSetChanged()
+    }
 
+    fun updateWord(word: Word, position: Int) {
+        words[position] = word
+        notifyItemChanged(position)
+    }
 }

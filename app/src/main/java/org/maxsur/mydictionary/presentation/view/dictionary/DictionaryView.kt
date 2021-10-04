@@ -3,7 +3,6 @@ package org.maxsur.mydictionary.presentation.view.dictionary
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
-import moxy.viewstate.strategy.SingleStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import org.maxsur.mydictionary.domain.model.Word
 

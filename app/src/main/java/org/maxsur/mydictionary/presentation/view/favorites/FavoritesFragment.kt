@@ -13,7 +13,7 @@ import org.maxsur.mydictionary.DictionaryApplication
 import org.maxsur.mydictionary.R
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.presentation.presenter.favorites.FavoritesPresenter
-import org.maxsur.mydictionary.presentation.view.dictionary.WordsAdapter
+import org.maxsur.mydictionary.presentation.view.common.WordsAdapter
 import javax.inject.Inject
 import javax.inject.Provider
 
