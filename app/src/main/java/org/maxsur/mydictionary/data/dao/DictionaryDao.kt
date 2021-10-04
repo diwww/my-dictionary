@@ -25,4 +25,7 @@ interface DictionaryDao {
 
     @Query("SELECT * FROM word WHERE uid = :uid LIMIT 1")
     fun getWord(uid: Int): Single<WordEntity>
+
+    @Query("SELECT * FROM word WHERE favorite = 1")
+    fun getFavoriteWords(): Single<List<WordEntity>>
 }

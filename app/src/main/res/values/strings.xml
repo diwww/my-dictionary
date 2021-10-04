@@ -4,6 +4,7 @@
     <string name="talkback_button_reverse">Swap languages</string>
     <string name="talkback_button_favorite">Favorite</string>
     <string name="error_general">Error occurred, please try again</string>
+    <string name="menu_item_favorites">Favorites</string>
 
     <string-array name="languages">
         <item>ru</item>

@@ -53,4 +53,13 @@ class DictionaryInteractor(private val repository: DictionaryRepository) {
     fun switchFavorite(word: Word): Single<Word> {
         return repository.updateWord(word.copy(favorite = !word.favorite))
     }
+
+    /**
+     * Получить список избранных слов.
+     *
+     * @return список избранных слов
+     */
+    fun getFavoriteWords(): Single<List<Word>> {
+        return repository.getFavoriteWords()
+    }
 }

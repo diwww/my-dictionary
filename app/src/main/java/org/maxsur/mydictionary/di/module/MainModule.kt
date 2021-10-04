@@ -1,5 +1,6 @@
 package org.maxsur.mydictionary.di.module
 
+import com.github.terrakok.cicerone.Router
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -14,6 +15,7 @@ import org.maxsur.mydictionary.data.service.DictionaryService
 import org.maxsur.mydictionary.domain.interactor.DictionaryInteractor
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
 import org.maxsur.mydictionary.presentation.presenter.dictionary.DictionaryPresenter
+import org.maxsur.mydictionary.presentation.presenter.favorites.FavoritesPresenter
 import org.maxsur.mydictionary.util.RxSchedulers
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -24,11 +26,12 @@ object MainModule {
 
     @JvmStatic
     @Provides
-    fun providePresenter(
+    fun provideDictionaryPresenter(
         interactor: DictionaryInteractor,
-        rxSchedulers: RxSchedulers
+        rxSchedulers: RxSchedulers,
+        router: Router
     ): DictionaryPresenter {
-        return DictionaryPresenter(interactor, rxSchedulers)
+        return DictionaryPresenter(interactor, rxSchedulers, router)
     }
 
     @JvmStatic
@@ -80,5 +83,14 @@ object MainModule {
             .build()
 
         return retrofit.create(DictionaryService::class.java)
+    }
+
+    @JvmStatic
+    @Provides
+    fun provideFavoritesPresenter(
+        interactor: DictionaryInteractor,
+        rxSchedulers: RxSchedulers
+    ): FavoritesPresenter {
+        return FavoritesPresenter(interactor, rxSchedulers)
     }
 }

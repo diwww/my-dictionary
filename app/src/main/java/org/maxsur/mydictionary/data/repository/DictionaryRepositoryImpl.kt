@@ -60,4 +60,9 @@ class DictionaryRepositoryImpl(
         return dictionaryDao.updateWord(wordToWordEntityConverter.convert(word))
             .andThen(dictionaryDao.getWord(word.id).map(wordEntityToWordConverter::convert))
     }
+
+    override fun getFavoriteWords(): Single<List<Word>> {
+        return dictionaryDao.getFavoriteWords()
+            .map(wordEntityToWordConverter::convertList)
+    }
 }

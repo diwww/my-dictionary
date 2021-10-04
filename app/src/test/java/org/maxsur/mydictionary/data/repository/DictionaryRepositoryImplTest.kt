@@ -138,4 +138,23 @@ class DictionaryRepositoryImplTest {
             .assertNoErrors()
             .assertValue(word)
     }
+
+    @Test
+    fun getFavoriteWords() {
+        val wordEntities = listOf(
+            WordEntity(0, "дом", "house", "ru", "en", favorite = true),
+            WordEntity(1, "dog", "собака", "en", "ru", favorite = true)
+        )
+        val words = listOf(
+            Word("дом", "house", Translation("ru", "en"), favorite = true),
+            Word("dog", "собака", Translation("en", "ru"), favorite = true)
+        )
+        every { dictionaryDao.getFavoriteWords() } returns Single.just(wordEntities)
+        every { wordEntityToWordConverter.convertList(wordEntities) } returns words
+
+        repository.getFavoriteWords()
+            .test()
+            .assertNoErrors()
+            .assertValue(words)
+    }
 }

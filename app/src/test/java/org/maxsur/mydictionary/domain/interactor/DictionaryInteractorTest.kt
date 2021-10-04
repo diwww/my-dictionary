@@ -170,4 +170,18 @@ class DictionaryInteractorTest {
             .assertValue(newWord)
             .assertNoErrors()
     }
+
+    @Test
+    fun getFavoriteWords() {
+        val words = listOf(
+            Word("дом", "house", Translation("RU", "EN")),
+            Word("dog", "собака", Translation("EN", "RU"))
+        )
+        every { repository.getFavoriteWords() } returns Single.just(words)
+
+        interactor.getFavoriteWords()
+            .test()
+            .assertValue(words)
+            .assertNoErrors()
+    }
 }

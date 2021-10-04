@@ -2,6 +2,8 @@ package org.maxsur.mydictionary.presentation.view.dictionary
 
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.SingleStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import org.maxsur.mydictionary.domain.model.Word
 
@@ -26,7 +28,7 @@ interface DictionaryView : MvpView {
     /**
      * Отобразить ошибку.
      */
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showError()
 
     /**
@@ -34,7 +36,7 @@ interface DictionaryView : MvpView {
      *
      * @param search текст поиска
      */
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun setSearchText(search: String)
 
     /**
@@ -52,6 +54,6 @@ interface DictionaryView : MvpView {
      * @param word
      *
      */
-    @StateStrategyType(AddToEndSingleStrategy::class)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun updateWord(word: Word, position: Int)
 }

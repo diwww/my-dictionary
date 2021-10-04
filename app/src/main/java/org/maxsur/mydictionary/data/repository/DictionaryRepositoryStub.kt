@@ -51,4 +51,8 @@ class DictionaryRepositoryStub : DictionaryRepository {
         // do nothing
         return Single.just(word)
     }
+
+    override fun getFavoriteWords(): Single<List<Word>> {
+        return Single.just(words)
+    }
 }

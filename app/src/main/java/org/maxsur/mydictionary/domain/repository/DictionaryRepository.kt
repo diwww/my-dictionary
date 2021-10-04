@@ -41,4 +41,11 @@ interface DictionaryRepository {
      * @return обновленное слово из БД
      */
     fun updateWord(word: Word): Single<Word>
+
+    /**
+     * Получить список избранных слов.
+     *
+     * @return список избранных слов
+     */
+    fun getFavoriteWords(): Single<List<Word>>
 }

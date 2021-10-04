@@ -5,9 +5,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +44,8 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     private lateinit var spinnerFrom: Spinner
     private lateinit var spinnerTo: Spinner
     private lateinit var reverseButton: ImageButton
+
+    private lateinit var textChangedListener: AfterTextChanged
     private val wordsAdapter = WordsAdapter { word, position ->
         presenter.switchFavorite(word, position)
     }
@@ -60,6 +70,32 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViews(view)
         setupViews()
+        setHasOptionsMenu(true)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        textChangedListener = AfterTextChanged(presenter::searchWords)
+            .also(searchEditText::addTextChangedListener)
+        presenter.getWords(searchEditText.text.toString())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        searchEditText.removeTextChangedListener(textChangedListener)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.favorites) {
+            presenter.openFavorites()
+            true
+        } else {
+            false
+        }
     }
 
     override fun showWords(words: List<Word>) {
@@ -120,7 +156,6 @@ class DictionaryFragment : MvpAppCompatFragment(), DictionaryView {
                 spinnerTo.selectedItemPosition
             )
         }
-        searchEditText.addTextChangedListener(AfterTextChanged(presenter::searchWords))
     }
 
     private fun setupSpinner(spinner: Spinner) {

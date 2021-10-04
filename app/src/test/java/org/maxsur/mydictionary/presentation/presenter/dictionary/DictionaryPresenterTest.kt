@@ -1,6 +1,7 @@
 package org.maxsur.mydictionary.presentation.presenter.dictionary
 
 import android.util.Log
+import com.github.terrakok.cicerone.Router
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -35,6 +36,9 @@ class DictionaryPresenterTest {
     @MockK
     private lateinit var view: DictionaryView
 
+    @MockK
+    private lateinit var router: Router
+
     @InjectMockKs
     private lateinit var presenter: DictionaryPresenter
 
@@ -59,7 +63,7 @@ class DictionaryPresenterTest {
     }
 
     @Test
-    fun `onFirstViewAttach success`() {
+    fun `getWords success`() {
         val words = listOf(
             Word("дом", "house", Translation("RU", "EN")),
             Word("dog", "собака", Translation("EN", "RU"))
@@ -67,6 +71,7 @@ class DictionaryPresenterTest {
         every { interactor.getAllWords() } returns Single.just(words)
 
         presenter.attachView(view)
+        presenter.getWords("")
         testScheduler.triggerActions()
 
         verify { view.showWords(words) }
@@ -74,11 +79,12 @@ class DictionaryPresenterTest {
     }
 
     @Test
-    fun `onFirstViewAttach error`() {
+    fun `getWords error`() {
         val exception = RuntimeException()
         every { interactor.getAllWords() } returns Single.error(exception)
 
         presenter.attachView(view)
+        presenter.getWords("")
         testScheduler.triggerActions()
 
         verify(exactly = 0) { view.showWords(any()) }

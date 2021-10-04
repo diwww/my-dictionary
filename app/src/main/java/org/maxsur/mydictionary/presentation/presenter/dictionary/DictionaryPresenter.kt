@@ -1,13 +1,16 @@
 package org.maxsur.mydictionary.presentation.presenter.dictionary
 
 import android.util.Log
+import com.github.terrakok.cicerone.Router
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import moxy.InjectViewState
 import moxy.MvpPresenter
 import org.maxsur.mydictionary.domain.interactor.DictionaryInteractor
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
+import org.maxsur.mydictionary.presentation.Screens
 import org.maxsur.mydictionary.presentation.view.dictionary.DictionaryView
 import org.maxsur.mydictionary.util.RxSchedulers
 import java.util.concurrent.TimeUnit
@@ -20,10 +23,13 @@ private const val DEBOUNCE_MS = 500L
  *
  * @property interactor интерактор словаря
  * @property rxSchedulers шедулеры rx потоков
+ * @property router роутер приложения
  */
+@InjectViewState
 class DictionaryPresenter(
     private val interactor: DictionaryInteractor,
-    private val rxSchedulers: RxSchedulers
+    private val rxSchedulers: RxSchedulers,
+    private val router: Router
 ) :
     MvpPresenter<DictionaryView>() {
 
@@ -41,17 +47,22 @@ class DictionaryPresenter(
             .observeOn(rxSchedulers.main)
             .subscribe(this::onSuccess, this::onError)
             .also(compositeDisposable::add)
-
-        interactor.getAllWords()
-            .subscribeOn(rxSchedulers.io)
-            .observeOn(rxSchedulers.main)
-            .subscribe(this::onSuccess, this::onError)
-            .also(compositeDisposable::add)
     }
 
     override fun onDestroy() {
         compositeDisposable.dispose()
         compositeDisposable.clear()
+    }
+
+    fun getWords(search: String) {
+        if (search.isBlank()) {
+            interactor.getAllWords()
+        } else {
+            interactor.searchWords(search)
+        }.subscribeOn(rxSchedulers.io)
+            .observeOn(rxSchedulers.main)
+            .subscribe(this::onSuccess, this::onError)
+            .also(compositeDisposable::add)
     }
 
     /**
@@ -107,6 +118,13 @@ class DictionaryPresenter(
                 viewState.updateWord(it, position)
             }, this::onError)
             .also(compositeDisposable::add)
+    }
+
+    /**
+     * Открыть экран с избранными словами.
+     */
+    fun openFavorites() {
+        router.navigateTo(Screens.favorites())
     }
 
     private fun onSuccess(words: List<Word>) {
