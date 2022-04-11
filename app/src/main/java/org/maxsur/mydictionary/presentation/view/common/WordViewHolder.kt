@@ -21,17 +21,22 @@ class WordViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         itemView.findViewById(R.id.text_word_translated)
     private val favoriteButton: ImageButton = itemView.findViewById(R.id.button_favorite)
 
-    fun onBind(word: Word, favoriteClickListener: (Word, Int) -> Unit) {
+    fun onBind(word: Word, favoriteClickListener: (Word) -> Unit) {
         with(word) {
             fromTextView.text = translation.from
             toTextView.text = translation.to
             originalWordTextView.text = original
             translatedWordTextView.text = translated
-            val icon = if (favorite) R.drawable.ic_star_fill_24 else R.drawable.ic_star_24
-            favoriteButton.setImageResource(icon)
+            favoriteButton.setImageResource(getFavoriteIcon(favorite))
             favoriteButton.setOnClickListener {
-                favoriteClickListener.invoke(word, adapterPosition)
+                favoriteClickListener.invoke(word)
             }
         }
     }
+
+    fun setFavoriteState(favorite: Boolean) {
+        favoriteButton.setImageResource(getFavoriteIcon(favorite))
+    }
+
+    private fun getFavoriteIcon(favorite: Boolean) = if (favorite) R.drawable.ic_star_fill_24 else R.drawable.ic_star_24
 }

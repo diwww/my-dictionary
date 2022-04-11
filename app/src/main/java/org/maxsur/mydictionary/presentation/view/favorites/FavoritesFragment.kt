@@ -23,7 +23,7 @@ class FavoritesFragment : MvpAppCompatFragment(R.layout.fragment_favorites), Fav
     lateinit var presenterProvider: Provider<FavoritesPresenter>
 
     private lateinit var recyclerView: RecyclerView
-    private val wordsAdapter = WordsAdapter { word, _ ->
+    private val wordsAdapter = WordsAdapter { word  ->
         presenter.switchFavorite(word)
     }
 
@@ -46,7 +46,7 @@ class FavoritesFragment : MvpAppCompatFragment(R.layout.fragment_favorites), Fav
     }
 
     override fun showFavoriteWords(words: List<Word>) {
-        wordsAdapter.setWords(words)
+        wordsAdapter.submitList(words)
     }
 
     override fun showError() {

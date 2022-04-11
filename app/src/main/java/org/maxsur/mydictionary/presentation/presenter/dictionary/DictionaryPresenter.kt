@@ -30,8 +30,7 @@ class DictionaryPresenter(
     private val interactor: DictionaryInteractor,
     private val rxSchedulers: RxSchedulers,
     private val router: Router
-) :
-    MvpPresenter<DictionaryView>() {
+) : MvpPresenter<DictionaryView>() {
 
     private val compositeDisposable = CompositeDisposable()
     private val searchPublishSubject = PublishSubject.create<String>()
@@ -39,11 +38,10 @@ class DictionaryPresenter(
     override fun onFirstViewAttach() {
         searchPublishSubject.toFlowable(BackpressureStrategy.LATEST)
             .debounce(DEBOUNCE_MS, TimeUnit.MILLISECONDS, rxSchedulers.computation)
-            .flatMapSingle { search ->
-                interactor.searchWords(search).subscribeOn(rxSchedulers.io)
-                    .doOnError(this::logError)
-                    .onErrorResumeNext(interactor.getAllWords())
-            }
+            .subscribe { interactor.searchWords(it) }
+            .also(compositeDisposable::add)
+
+        interactor.getWordsObservable()
             .observeOn(rxSchedulers.main)
             .subscribe(this::onSuccess, this::onError)
             .also(compositeDisposable::add)
@@ -51,17 +49,6 @@ class DictionaryPresenter(
 
     override fun onDestroy() {
         compositeDisposable.clear()
-    }
-
-    fun getWords(search: String) {
-        if (search.isBlank()) {
-            interactor.getAllWords()
-        } else {
-            interactor.searchWords(search)
-        }.subscribeOn(rxSchedulers.io)
-            .observeOn(rxSchedulers.main)
-            .subscribe(this::onSuccess, this::onError)
-            .also(compositeDisposable::add)
     }
 
     /**
@@ -87,8 +74,8 @@ class DictionaryPresenter(
                 .observeOn(rxSchedulers.main)
                 .doOnSubscribe { viewState.showProgress(true) }
                 .doFinally { viewState.showProgress(false) }
-                .doOnSuccess { viewState.setSearchText("") }
-                .subscribe(this::onSuccess, this::onError)
+                .doOnComplete { viewState.setSearchText("") }
+                .subscribe({}, { onError(it) })
                 .also(compositeDisposable::add)
         }
     }
@@ -96,8 +83,8 @@ class DictionaryPresenter(
     /**
      * Поменять языки местами.
      *
-     * @param from язык, с которого осуществляется перевод
-     * @param to язык, на который осуществляется перевод
+     * @param fromPos язык, с которого осуществляется перевод
+     * @param toPos язык, на который осуществляется перевод
      */
     fun reverseLanguages(fromPos: Int, toPos: Int) {
         viewState.setSpinnersSelection(toPos, fromPos)
@@ -107,15 +94,12 @@ class DictionaryPresenter(
      * Изменить состояние избранного у слова.
      *
      * @param word слово
-     * @param position позиция слова в списке
      */
-    fun switchFavorite(word: Word, position: Int) {
+    fun switchFavorite(word: Word) {
         interactor.switchFavorite(word)
             .subscribeOn(rxSchedulers.io)
             .observeOn(rxSchedulers.main)
-            .subscribe({
-                viewState.updateWord(it, position)
-            }, this::onError)
+            .subscribe({ }, this::onError)
             .also(compositeDisposable::add)
     }
 
@@ -127,6 +111,7 @@ class DictionaryPresenter(
     }
 
     private fun onSuccess(words: List<Word>) {
+        Log.d(TAG, "onSuccess: $words")
         viewState.showWords(words)
     }
 

@@ -1,7 +1,10 @@
 package org.maxsur.mydictionary.data.repository
 
+import android.util.Log
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import org.maxsur.mydictionary.BuildConfig
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter
 import org.maxsur.mydictionary.data.converter.TranslateResponseToWordConverter.ConverterArgs
@@ -13,6 +16,8 @@ import org.maxsur.mydictionary.data.service.DictionaryService
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
+
+const val TAG = "DictionaryRepository"
 
 /**
  * Репозиторий словаря.
@@ -31,12 +36,25 @@ class DictionaryRepositoryImpl(
     private val wordEntityToWordConverter: WordEntityToWordConverter
 ) : DictionaryRepository {
 
-    override fun getWords(search: String?): Single<List<Word>> {
-        return if (search != null) {
-            dictionaryDao.searchWords(search)
-        } else {
-            dictionaryDao.getAllWords()
-        }.map(wordEntityToWordConverter::convertList)
+    private val searchSubject = PublishSubject.create<String>()
+
+    override fun getWordsObservable(): Observable<List<Word>> {
+        return searchSubject.startWith("")
+            .switchMap { search ->
+                if (search.isBlank()) {
+                    dictionaryDao.getAllWordsObservable()
+                } else {
+                    dictionaryDao.getSearchObservable(search)
+                }
+            }
+            .map(wordEntityToWordConverter::convertList)
+            .doOnNext{
+                Log.d(TAG, "getWordsObservable: $it")
+            }
+    }
+
+    override fun search(search: String) {
+        searchSubject.onNext(search)
     }
 
     override fun translate(word: String, translation: Translation): Single<Word> {
@@ -56,9 +74,8 @@ class DictionaryRepositoryImpl(
         return dictionaryDao.saveWord(wordToWordEntityConverter.convert(word))
     }
 
-    override fun updateWord(word: Word): Single<Word> {
+    override fun updateWord(word: Word): Completable {
         return dictionaryDao.updateWord(wordToWordEntityConverter.convert(word))
-            .andThen(dictionaryDao.getWord(word.id).map(wordEntityToWordConverter::convert))
     }
 
     override fun getFavoriteWords(): Single<List<Word>> {

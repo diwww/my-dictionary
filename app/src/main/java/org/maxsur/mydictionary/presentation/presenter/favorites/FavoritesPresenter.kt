@@ -44,10 +44,9 @@ class FavoritesPresenter(
      */
     fun switchFavorite(word: Word) {
         interactor.switchFavorite(word)
-            .flatMap { interactor.getFavoriteWords() }
             .subscribeOn(rxSchedulers.io)
             .observeOn(rxSchedulers.main)
-            .subscribe(this::onSuccess, this::onError)
+            .subscribe({ }, this::onError)
             .also(compositeDisposable::add)
     }
 

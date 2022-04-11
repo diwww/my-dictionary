@@ -1,6 +1,7 @@
 package org.maxsur.mydictionary.domain.repository
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
@@ -11,12 +12,18 @@ import org.maxsur.mydictionary.domain.model.Word
 interface DictionaryRepository {
 
     /**
-     * Получить список слов с переводом.
+     * Подписаться на изменения списка слов с переводом.
+     *
+     * @return [Observable] со списком слов с переводом
+     */
+    fun getWordsObservable(): Observable<List<Word>>
+
+    /**
+     * Выполнить поиск слов.
      *
      * @param search поисковый запрос, по которому фильтруются слова (опционально)
-     * @return список слов с переводом
      */
-    fun getWords(search: String? = null): Single<List<Word>>
+    fun search(search: String)
 
     /**
      * Перевести слово.
@@ -31,6 +38,7 @@ interface DictionaryRepository {
      * Сохранить переведенное слово в БД.
      *
      * @param word переведенное слово
+     * @return [Completable] с результатом операции
      */
     fun saveWord(word: Word): Completable
 
@@ -38,9 +46,9 @@ interface DictionaryRepository {
      * Обновить слово.
      *
      * @param word обновленное слово с тем же id
-     * @return обновленное слово из БД
+     * @return [Completable] с результатом операции
      */
-    fun updateWord(word: Word): Single<Word>
+    fun updateWord(word: Word): Completable
 
     /**
      * Получить список избранных слов.

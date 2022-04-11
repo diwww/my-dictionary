@@ -1,7 +1,9 @@
 package org.maxsur.mydictionary.data.repository
 
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.subjects.PublishSubject
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
@@ -10,6 +12,7 @@ import java.util.*
 class DictionaryRepositoryStub : DictionaryRepository {
 
     private val random = Random()
+    private val searchSubject = PublishSubject.create<String>()
 
     private val words = listOf(
         Word("dog", "собака", Translation("EN", "RU")),
@@ -20,17 +23,22 @@ class DictionaryRepositoryStub : DictionaryRepository {
         Word("color", "цвет", Translation("EN", "RU")),
     ).toMutableList()
 
-    override fun getWords(search: String?): Single<List<Word>> {
-        return if (search.isNullOrBlank()) {
-            Single.just(words)
-        } else {
-            Single.just(
-                words.filter { word ->
-                    word.original.contains(search, ignoreCase = true) ||
-                            word.translated.contains(search, ignoreCase = true)
+    override fun getWordsObservable(): Observable<List<Word>> {
+        return searchSubject.startWith("")
+            .switchMap { search ->
+                if (search.isBlank()) {
+                    Observable.just(words)
+                } else {
+                    Observable.just(words.filter { word ->
+                        word.original.contains(other = search, ignoreCase = true) ||
+                                word.translated.contains(other = search, ignoreCase = true)
+                    })
                 }
-            )
-        }
+            }
+    }
+
+    override fun search(search: String) {
+        searchSubject.onNext(search)
     }
 
     override fun translate(word: String, translation: Translation): Single<Word> {
@@ -47,9 +55,9 @@ class DictionaryRepositoryStub : DictionaryRepository {
         return Completable.fromAction { words.add(word) }
     }
 
-    override fun updateWord(word: Word): Single<Word> {
+    override fun updateWord(word: Word): Completable {
         // do nothing
-        return Single.just(word)
+        return Completable.complete()
     }
 
     override fun getFavoriteWords(): Single<List<Word>> {

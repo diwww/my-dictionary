@@ -1,9 +1,14 @@
 package org.maxsur.mydictionary.domain.interactor
 
+import android.util.Log
+import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.maxsur.mydictionary.domain.model.Translation
 import org.maxsur.mydictionary.domain.model.Word
 import org.maxsur.mydictionary.domain.repository.DictionaryRepository
+
+private const val TAG = "DictionaryInteractor"
 
 /**
  * Интерактор для работы со словарем.
@@ -13,22 +18,21 @@ import org.maxsur.mydictionary.domain.repository.DictionaryRepository
 class DictionaryInteractor(private val repository: DictionaryRepository) {
 
     /**
-     * Получить все слова с переводом.
+     * Подписаться на изменения списка слов с переводом.
      *
-     * @return список слов с переводом
+     * @return [Observable] со списком слов с переводом
      */
-    fun getAllWords(): Single<List<Word>> {
-        return repository.getWords()
+    fun getWordsObservable(): Observable<List<Word>> {
+        return repository.getWordsObservable()
     }
 
     /**
      * Выполнить поиск среди слов.
      *
      * @param search поисковый запрос
-     * @return отфильтрованный список слов с переводом
      */
-    fun searchWords(search: String): Single<List<Word>> {
-        return repository.getWords(search)
+    fun searchWords(search: String) {
+        repository.search(search)
     }
 
     /**
@@ -36,22 +40,23 @@ class DictionaryInteractor(private val repository: DictionaryRepository) {
      *
      * @param word слово для перевода
      * @param translation направление перевода
-     * @return обновленный список слов с переводом, включающий новое слово
+     * @return [Completable] с результатом операции
      */
-    fun translateAndSave(word: String, translation: Translation): Single<List<Word>> {
+    fun translateAndSave(word: String, translation: Translation): Completable {
         return repository.translate(word, translation)
             .flatMapCompletable(repository::saveWord)
-            .andThen(repository.getWords())
     }
 
     /**
      * Инвертировать состояние избранного у слова.
      *
      * @param word слово для изменения
-     * @return слово с инвертированным состоянием избранного
+     * @return [Completable] с результатом операции
      */
-    fun switchFavorite(word: Word): Single<Word> {
-        return repository.updateWord(word.copy(favorite = !word.favorite))
+    fun switchFavorite(word: Word): Completable {
+        val newWord = word.copy(favorite = !word.favorite)
+        Log.d(TAG, "oldWord = $word; newWord = $newWord")
+        return repository.updateWord(newWord)
     }
 
     /**

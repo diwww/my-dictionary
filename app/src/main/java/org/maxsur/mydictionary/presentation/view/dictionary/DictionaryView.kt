@@ -46,13 +46,4 @@ interface DictionaryView : MvpView {
      */
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun setSpinnersSelection(fromPos: Int, toPos: Int)
-
-    /**
-     * Обновить слово на определенной позиции.
-     *
-     * @param word
-     *
-     */
-    @StateStrategyType(OneExecutionStateStrategy::class)
-    fun updateWord(word: Word, position: Int)
 }

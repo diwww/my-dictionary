@@ -45,8 +45,8 @@ class DictionaryFragment : MvpAppCompatFragment(R.layout.fragment_dictionary), D
     private lateinit var reverseButton: ImageButton
 
     private lateinit var textChangedListener: AfterTextChanged
-    private val wordsAdapter = WordsAdapter { word, position ->
-        presenter.switchFavorite(word, position)
+    private val wordsAdapter = WordsAdapter { word ->
+        presenter.switchFavorite(word)
     }
 
     private val presenter by moxyPresenter {
@@ -68,7 +68,6 @@ class DictionaryFragment : MvpAppCompatFragment(R.layout.fragment_dictionary), D
         super.onStart()
         textChangedListener = AfterTextChanged(presenter::searchWords)
             .also(searchEditText::addTextChangedListener)
-        presenter.getWords(searchEditText.text.toString())
     }
 
     override fun onStop() {
@@ -90,7 +89,7 @@ class DictionaryFragment : MvpAppCompatFragment(R.layout.fragment_dictionary), D
     }
 
     override fun showWords(words: List<Word>) {
-        wordsAdapter.setWords(words)
+        wordsAdapter.submitList(words)
     }
 
     override fun showProgress(show: Boolean) {
@@ -110,10 +109,6 @@ class DictionaryFragment : MvpAppCompatFragment(R.layout.fragment_dictionary), D
     override fun setSpinnersSelection(fromPos: Int, toPos: Int) {
         spinnerFrom.setSelection(fromPos)
         spinnerTo.setSelection(toPos)
-    }
-
-    override fun updateWord(word: Word, position: Int) {
-        wordsAdapter.updateWord(word, position)
     }
 
     private fun initViews(view: View) = with(view) {
